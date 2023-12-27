@@ -2,12 +2,11 @@
 import BaseButton from "@/app/Atoms/BaseButton/BaseButton"
 import BaseInput from "@/app/Atoms/BaseInput/BaseInput"
 import BaseTextarea from "@/app/Atoms/BaseTextarea/BaseTextarea"
-import PostTitle from "@/app/Atoms/PostTitle/PostTitle"
 import { PostProps } from "@/app/Molecules/Post/post.type"
-import { posts } from "@/app/constants"
+import { PostsContext } from "@/app/page"
 import { Box } from "@mui/material"
 import Link from "next/link"
-import { SyntheticEvent, useEffect, useState } from "react"
+import { SyntheticEvent, useContext, useEffect, useState } from "react"
 type Params = {
   params: {
     id: string
@@ -18,22 +17,22 @@ export default function EditPost({ params: { id } }: Params) {
   const [Post, setPost] = useState<PostProps>()
   const [postTitle, setPostTitle] = useState<string | undefined>('')
   const [postDesc, setPostDesc] = useState<string | undefined>('')
+  const newPosts = useContext(PostsContext)
+
   useEffect(() => {
-    posts.map(item => {
+    newPosts.map(item => {
       if (item?.id === +id) setPost(item)
     })
     setPostDesc(Post?.desc)
     setPostTitle(Post?.title)
-  }, [id, Post?.desc, Post?.title])
+  }, [newPosts, id, Post?.desc, Post?.title])
 
   const handleUpdate = () => {
-    console.log(posts)
-
-    posts.map((post) => {
+    newPosts.map((post) => {
       if (post.id === +id && postTitle !== undefined) post.title = postTitle
       if (post.id === +id && postDesc !== undefined) post.desc = postDesc
     })
-    console.log(posts)
+    window.confirm('Post has been updated')
   }
 
   return (
@@ -47,6 +46,7 @@ export default function EditPost({ params: { id } }: Params) {
         <BaseTextarea label={Post?.desc} value={postDesc} onChange={(e: SyntheticEvent) => setPostDesc(e.target.value)} />
         <BaseButton label="Update" handleChange={handleUpdate} />
       </Box>
+      <Link href={'/'}>Home</Link>
     </div>
   )
 }
